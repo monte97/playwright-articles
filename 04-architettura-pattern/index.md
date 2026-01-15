@@ -1,7 +1,7 @@
 ---
 title: "Architettura e Pattern per Test Scalabili"
 date: 2025-01-23T10:00:00+01:00
-description: "Page Object Model, Custom Fixtures e parallelizzazione: come strutturare test Playwright per progetti enterprise"
+description: "Page Object Model, Custom Fixtures e parallelizzazione: come strutturare test Playwright per progetti grandi"
 menu:
   sidebar:
     name: "4. Architettura"
@@ -15,15 +15,13 @@ draft: false
 
 *Tempo di lettura: ~12 minuti*
 
-Un test che funziona non è abbastanza. Quando la suite cresce a centinaia di test, servono pattern che garantiscano **manutenibilità**, **riusabilità** e **scalabilità**.
-
-In questo articolo esploriamo tre pattern fondamentali: **Page Object Model**, **Custom Fixtures**, e **parallelizzazione avanzata**.
+Un test che funziona non basta. Quando la suite cresce a centinaia di test, serve struttura.
 
 ---
 
 ## Il Problema: Test Che Non Scalano
 
-Quando inizi, i test sono semplici:
+All'inizio i test sono semplici:
 
 ```javascript
 test('login', async ({ page }) => {
@@ -31,15 +29,14 @@ test('login', async ({ page }) => {
   await page.getByLabel('Email').fill('user@test.com');
   await page.getByLabel('Password').fill('password123');
   await page.getByRole('button', { name: 'Login' }).click();
-  await expect(page).toHaveURL(/dashboard/);
 });
 ```
 
-Ma poi aggiungi altri test che fanno login:
+Poi aggiungi altri test che fanno login:
 
 ```javascript
 test('view profile', async ({ page }) => {
-  // Duplicato: stesso codice di login
+  // Duplicato
   await page.goto('/login');
   await page.getByLabel('Email').fill('user@test.com');
   await page.getByLabel('Password').fill('password123');
@@ -47,45 +44,19 @@ test('view profile', async ({ page }) => {
 
   // Il test vero inizia qui
   await page.getByRole('link', { name: 'Profile' }).click();
-  // ...
-});
-
-test('edit settings', async ({ page }) => {
-  // Di nuovo duplicato...
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('user@test.com');
-  // ...
 });
 ```
 
-**Problemi:**
-
-1. **Duplicazione**: Lo stesso codice di login in 50 test
-2. **Manutenzione**: Se il form cambia, devi modificare 50 file
-3. **Lentezza**: Ogni test esegue il login via UI (secondi persi)
+**I problemi:**
+1. Stesso codice in 50 test
+2. Se il form cambia, modifichi 50 file
+3. Ogni test esegue il login via UI (secondi persi)
 
 ---
 
-## Pattern 1: Page Object Model (POM)
+## Pattern 1: Page Object Model
 
-Il Page Object Model incapsula la logica di interazione con una pagina in una classe dedicata.
-
-### Struttura
-
-```text
-tests/
-├── pages/
-│   ├── LoginPage.ts
-│   ├── DashboardPage.ts
-│   └── ProfilePage.ts
-├── specs/
-│   ├── login.spec.ts
-│   └── profile.spec.ts
-└── fixtures/
-    └── auth.ts
-```
-
-### Implementazione
+Incapsula la logica di una pagina in una classe.
 
 **pages/LoginPage.ts**
 
@@ -104,10 +75,6 @@ export class LoginPage {
     await this.page.getByLabel('Password').fill(password);
     await this.page.getByRole('button', { name: 'Login' }).click();
   }
-
-  async getErrorMessage() {
-    return this.page.getByTestId('error-message');
-  }
 }
 ```
 
@@ -125,39 +92,20 @@ test('login con successo', async ({ page }) => {
 
   await expect(page).toHaveURL(/dashboard/);
 });
-
-test('login con credenziali errate', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-
-  await loginPage.goto();
-  await loginPage.login('user@test.com', 'wrong-password');
-
-  await expect(loginPage.getErrorMessage()).toBeVisible();
-});
 ```
 
-### Vantaggi
-
-- **DRY**: La logica di login è in un solo posto
-- **Manutenibilità**: Se il form cambia, modifichi solo `LoginPage.ts`
-- **Leggibilità**: I test esprimono l'intento, non i dettagli
+**Vantaggi:**
+- La logica è in un posto solo
+- Se il form cambia, modifichi solo `LoginPage.ts`
+- I test esprimono l'intento, non i dettagli
 
 ---
 
 ## Pattern 2: Custom Fixtures
 
-Le Fixture di Playwright permettono di creare setup/teardown riutilizzabili.
+Il login via UI è lento. Se hai 100 test, perdi minuti solo per autenticarti.
 
-### Il Problema
-
-Eseguire il login via UI prima di ogni test è:
-
-- **Lento**: 2-3 secondi per test
-- **Ridondante**: Stai testando il login 100 volte
-
-### La Soluzione: Storage State
-
-Playwright può salvare lo stato del browser (cookie, localStorage) e riutilizzarlo.
+**La soluzione**: Salva lo stato del browser e riusalo.
 
 **fixtures/auth.ts**
 
@@ -166,7 +114,7 @@ import { test as base } from '@playwright/test';
 
 export const test = base.extend({
   authenticatedPage: async ({ page }, use) => {
-    // Setup: esegui login una volta
+    // Login una volta
     await page.goto('/login');
     await page.getByLabel('Email').fill('user@test.com');
     await page.getByLabel('Password').fill('password123');
@@ -176,7 +124,7 @@ export const test = base.extend({
     // Passa la pagina autenticata al test
     await use(page);
 
-    // Teardown: cleanup automatico
+    // Cleanup
     await page.context().clearCookies();
   },
 });
@@ -195,16 +143,16 @@ test('view profile', async ({ authenticatedPage }) => {
 });
 ```
 
-### Setup Globale con Project Dependencies
+### Setup Globale
 
-Per ottimizzare ulteriormente, puoi definire un progetto di setup:
+Per ottimizzare ancora: esegui il login **una volta** per tutta la suite.
 
 **playwright.config.ts**
 
 ```typescript
 export default defineConfig({
   projects: [
-    // Progetto di setup: esegue login e salva lo stato
+    // Progetto di setup
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
@@ -225,7 +173,7 @@ export default defineConfig({
 **tests/auth.setup.ts**
 
 ```typescript
-import { test as setup, expect } from '@playwright/test';
+import { test as setup } from '@playwright/test';
 
 const authFile = 'playwright/.auth/user.json';
 
@@ -241,51 +189,35 @@ setup('authenticate', async ({ page }) => {
 });
 ```
 
-**Risultato**: Il login viene eseguito **una sola volta** per l'intera suite.
+Il login viene eseguito **una sola volta**. Tutti i test partono già autenticati.
 
 ---
 
-## Pattern 3: Parallelizzazione e Isolamento
-
-### Configurazione Base
+## Pattern 3: Isolamento per Parallelizzazione
 
 ```typescript
 // playwright.config.ts
 export default defineConfig({
   workers: process.env.CI ? 2 : 4,
   fullyParallel: true,
-  retries: process.env.CI ? 2 : 0,
 });
 ```
 
-**Risultati tipici:**
-
-```bash
-# workers=1: ~10 minuti
-# workers=4: ~2.5 minuti
-
-# 4x più veloce!
-```
-
-### Il Problema: Resource Contention
-
-Se due test paralleli usano lo stesso account utente:
+**Il problema**: Se due test paralleli usano lo stesso account, interferiscono.
 
 ```javascript
 // Test 1: Aggiunge "Laptop" al carrello di user@test.com
 // Test 2: Aggiunge "Phone" al carrello di user@test.com
 
-// Interferiscono! Il carrello ha 2 prodotti invece di 1.
+// Il carrello ha 2 prodotti invece di 1!
 ```
 
-### La Soluzione: Fixture-Based Isolation
-
-Ogni test deve operare su dati dedicati:
+**La soluzione**: Ogni test usa dati dedicati.
 
 ```typescript
 export const test = base.extend({
   isolatedUser: async ({ request }, use) => {
-    // Setup: crea utente univoco via API
+    // Crea utente univoco via API
     const userId = `user-${Date.now()}-${Math.random()}`;
     const email = `${userId}@test.com`;
 
@@ -293,10 +225,9 @@ export const test = base.extend({
       data: { email, password: 'test123' },
     });
 
-    // Passa l'utente al test
     await use({ email, password: 'test123' });
 
-    // Teardown: elimina utente e dati
+    // Elimina utente
     await request.delete(`/api/users/${userId}`);
   },
 });
@@ -305,66 +236,47 @@ export const test = base.extend({
 **Utilizzo:**
 
 ```typescript
-test('checkout flow', async ({ page, isolatedUser }) => {
-  // Questo test ha un utente tutto suo
+test('checkout', async ({ page, isolatedUser }) => {
+  // Questo utente esiste solo per questo test
   await page.goto('/login');
   await page.getByLabel('Email').fill(isolatedUser.email);
-  await page.getByLabel('Password').fill(isolatedUser.password);
   // ...
 });
 ```
 
-### Sharding per CI/CD
-
-Per distribuire i test su più macchine:
-
-```bash
-# Macchina 1
-npx playwright test --shard=1/4
-
-# Macchina 2
-npx playwright test --shard=2/4
-
-# Macchina 3
-npx playwright test --shard=3/4
-
-# Macchina 4
-npx playwright test --shard=4/4
-```
+Nessuna interferenza. Parallelizzazione sicura.
 
 ---
 
-## Pattern 4: Sincronizzazione con Eventi di Rete
+## Pattern 4: Sincronizzazione con la Rete
 
-Le moderne applicazioni sono asincrone. Un click può scatenare una chiamata API.
+Un click può scatenare una chiamata API. Se verifichi il risultato troppo presto, il test fallisce.
 
-### Il Problema: Race Conditions
+**Il problema:**
 
 ```javascript
-// Click sul bottone "Salva"
 await page.getByRole('button', { name: 'Salva' }).click();
-
-// Verifica il messaggio di successo
 await expect(page.getByText('Salvato')).toBeVisible();
-// ❌ Potrebbe fallire se l'API è lenta!
+// Potrebbe fallire se l'API è lenta!
 ```
 
-### La Soluzione: waitForResponse
+**La soluzione**: Aspetta la risposta API.
 
 ```typescript
-// Pattern robusto: attesa esplicita della risposta API
 const [response] = await Promise.all([
-  // 1. Definisci l'evento da attendere
+  // Aspetta la risposta
   page.waitForResponse(
     (res) => res.url().includes('/api/products') && res.status() === 201
   ),
-  // 2. Scatena l'azione
+  // Scatena l'azione
   page.getByRole('button', { name: 'Salva' }).click(),
 ]);
 
-// 3. Ora siamo certi che l'operazione è conclusa
+// Ora l'operazione è completata
 await expect(page.getByText('Salvato')).toBeVisible();
 ```
+
+Il test prosegue solo quando l'app ha finito. Determinismo garantito.
 
 ---
 
@@ -372,39 +284,35 @@ await expect(page.getByText('Salvato')).toBeVisible();
 
 ```text
 playwright/
-├── .auth/                    # Storage state salvato
-│   └── user.json
+├── .auth/
+│   └── user.json           # Stato autenticato
 ├── fixtures/
-│   ├── auth.ts               # Fixture autenticazione
-│   └── api.ts                # Fixture per setup via API
+│   ├── auth.ts             # Fixture autenticazione
+│   └── api.ts              # Fixture per setup API
 ├── pages/
 │   ├── LoginPage.ts
-│   ├── DashboardPage.ts
 │   └── CheckoutPage.ts
 ├── tests/
-│   ├── auth.setup.ts         # Setup globale
+│   ├── auth.setup.ts       # Setup globale
 │   ├── login.spec.ts
-│   ├── checkout.spec.ts
-│   └── profile.spec.ts
+│   └── checkout.spec.ts
 └── playwright.config.ts
 ```
 
 ---
 
-## Cosa Abbiamo Imparato
+## Cosa Ho Imparato
 
-1. **Page Object Model**: Incapsula la logica di pagina, migliora manutenibilità
-2. **Custom Fixtures**: Setup/teardown riutilizzabili, autenticazione ottimizzata
-3. **Parallelizzazione**: Worker multipli con isolamento dei dati
-4. **Sincronizzazione**: `waitForResponse` per gestire chiamate API asincrone
+1. **Page Object Model**: Una classe per pagina. Manutenibilità.
+2. **Fixtures**: Setup riutilizzabile. Autenticazione ottimizzata.
+3. **Isolamento**: Dati dedicati per ogni test. Parallelizzazione sicura.
+4. **waitForResponse**: Sincronizzazione con le API. Niente race condition.
 
-Nel prossimo articolo vedremo come integrare Playwright in **CI/CD**, testing mobile, API testing e le **best practices** per team enterprise.
+Nel prossimo articolo: **CI/CD**, mobile testing, API testing, best practices.
 
 ---
 
 ## Repository
-
-Esplora gli esempi nel repository del workshop:
 
 👉 **[workshop-playwright](https://github.com/monte97/workshop-playwright)**
 
