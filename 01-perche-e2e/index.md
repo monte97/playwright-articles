@@ -15,13 +15,9 @@ draft: false
 
 *Tempo di lettura: ~8 minuti*
 
-Copertura all'80%. Build verde. Tutto ok nei report.
+I test unitari verificano singole funzioni in isolamento. Una copertura dell'80% indica che la maggior parte del codice è testato, ma non garantisce che l'applicazione funzioni correttamente dal punto di vista dell'utente.
 
-Ma in produzione: form che non si inviavano, bottoni che non rispondevano, checkout interrotti.
-
-I test unitari mi dicevano che andava tutto bene. Le lamentele degli utenti dicevano altro.
-
-**Il problema**: ci siamo focalizzati sulla copertura del codice, non su cosa gli utenti sperimentano quando usano il prodotto.
+In produzione si verificano problemi che i test unitari non rilevano: form che non si inviano, bottoni che non rispondono, flussi di checkout interrotti. La copertura del codice non corrisponde alla copertura dei comportamenti utente.
 
 ---
 
@@ -51,17 +47,17 @@ I test E2E stanno in cima perché coprono flussi completi. Ma devono essere poch
 
 ## Perché i Test E2E Servono
 
-**Confidenza.** Stai testando esattamente ciò che l'utente sperimenta. Non una funzione isolata, ma il flusso completo.
+**Confidenza** — I test E2E verificano l'esperienza utente reale, non funzioni isolate. Il test attraversa l'intero flusso applicativo.
 
-**Copertura reale.** Frontend, backend, database, servizi esterni. Tutto insieme. I bug di integrazione emergono solo così.
+**Copertura reale** — Frontend, backend, database e servizi esterni vengono testati insieme. I bug di integrazione emergono solo in questo modo.
 
-**Protezione del business.** Login, checkout, pagamenti. Se questi flussi si rompono, il business si ferma.
+**Protezione dei flussi critici** — Login, checkout, pagamenti sono flussi che impattano direttamente il business. I test E2E verificano che funzionino end-to-end.
 
 ---
 
 ## Le Sfide Storiche
 
-I test E2E fanno paura. E non senza motivo.
+I test E2E presentano sfide specifiche che ne hanno limitato l'adozione.
 
 ### Costo
 
@@ -94,7 +90,7 @@ Un test E2E richiede secondi. Una suite completa richiede ore.
 └── Test "flaky" che passano e falliscono a caso
 ```
 
-Il problema più insidioso. Test che falliscono senza che il codice sia cambiato. La fiducia nel sistema di testing crolla.
+Il problema principale. Test che falliscono senza che il codice sia cambiato riducono l'affidabilità della suite di test.
 
 ---
 
@@ -123,21 +119,19 @@ await driver.findElement(By.id('button')).click();
 
 ## Cosa Succede Senza Test E2E
 
+Senza test E2E, i bug di integrazione vengono scoperti in produzione. Il ciclo tipico:
+
 ```text
-Deploy venerdì → Weekend "tranquillo" → Lunedì mattina:
+Deploy → Bug in produzione → Segnalazioni utenti:
 
-"Il checkout non funziona"
-"Non riesco a fare login"
-"Il carrello perde i prodotti"
+- "Il checkout non funziona"
+- "Non riesco a fare login"
+- "Il carrello perde i prodotti"
 
-↓
-
-Hotfix in produzione
-Rollback
-Post-mortem
+→ Hotfix / Rollback / Post-mortem
 ```
 
-E il ciclo si ripete.
+I test E2E anticipano questi problemi alla fase di sviluppo.
 
 ---
 

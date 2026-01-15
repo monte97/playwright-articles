@@ -15,20 +15,18 @@ draft: false
 
 *Tempo di lettura: ~10 minuti*
 
-Playwright è un framework open-source di Microsoft per l'automazione web.
-
-Ma non è "un altro Selenium". È costruito su tre pilastri che risolvono i problemi storici del testing E2E.
+Playwright è un framework open-source di Microsoft per l'automazione web. A differenza di Selenium, è progettato specificamente per le applicazioni web moderne e risolve i problemi storici del testing E2E attraverso tre pilastri: affidabilità, velocità e semplicità.
 
 ---
 
-## Setup: 30 Secondi
+## Setup
 
 ```bash
 npm init playwright@latest
 npx playwright test
 ```
 
-Fatto. Nessuna configurazione complessa, nessun driver da scaricare.
+L'installazione include automaticamente i browser necessari. Non richiede configurazione di driver esterni.
 
 ---
 
@@ -199,7 +197,7 @@ await page.getByRole('button', { name: 'Login' }).click();
 await expect(page).toHaveURL(/dashboard/);
 ```
 
-Zero `sleep()`. Codice leggibile. Selettori stabili.
+Il codice risulta più conciso e non richiede `sleep()` manuali.
 
 ---
 

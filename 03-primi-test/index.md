@@ -15,7 +15,7 @@ draft: false
 
 *Tempo di lettura: ~12 minuti*
 
-Basta teoria. Scriviamo codice.
+Questa sezione copre la sintassi base di Playwright, gli strumenti di generazione automatica dei test e le opzioni di debugging.
 
 ---
 
@@ -116,7 +116,7 @@ Nota: Playwright **sceglie automaticamente i selettori migliori** (`getByRole`, 
 
 ---
 
-## UI Mode: Il Tuo Nuovo Migliore Amico
+## UI Mode
 
 ```bash
 npx playwright test --ui
@@ -142,9 +142,9 @@ npx playwright test --ui
 
 ---
 
-## Trace Viewer: L'Autopsia dei Test Falliti
+## Trace Viewer
 
-Quando un test fallisce in CI, il **Trace Viewer** ti mostra cosa è successo.
+Quando un test fallisce in CI, il Trace Viewer permette di analizzare l'esecuzione passo per passo.
 
 **Attivazione:**
 
@@ -213,7 +213,7 @@ test('utente completa un acquisto', async ({ page }) => {
 });
 ```
 
-Selettori semantici. Nessun `sleep()`. Codice leggibile.
+Il test utilizza selettori semantici e non richiede attese manuali.
 
 ---
 

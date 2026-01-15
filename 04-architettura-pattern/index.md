@@ -15,7 +15,7 @@ draft: false
 
 *Tempo di lettura: ~12 minuti*
 
-Un test che funziona non basta. Quando la suite cresce a centinaia di test, serve struttura.
+Quando la suite di test cresce a centinaia di test case, la manutenibilità diventa un problema. Questa sezione presenta pattern architetturali per strutturare test Playwright scalabili.
 
 ---
 
@@ -276,7 +276,7 @@ const [response] = await Promise.all([
 await expect(page.getByText('Salvato')).toBeVisible();
 ```
 
-Il test prosegue solo quando l'app ha finito. Determinismo garantito.
+Il test prosegue solo quando la risposta API è stata ricevuta, garantendo determinismo.
 
 ---
 

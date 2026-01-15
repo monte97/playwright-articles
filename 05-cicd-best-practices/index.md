@@ -15,7 +15,7 @@ draft: false
 
 *Tempo di lettura: ~10 minuti*
 
-Un test che funziona solo in locale vale poco. Il valore vero emerge quando i test girano **automaticamente** ad ogni push.
+L'integrazione dei test in una pipeline CI/CD garantisce l'esecuzione automatica ad ogni push. Questa sezione copre la configurazione per GitHub Actions e GitLab CI, il mobile testing, l'API testing e le best practices.
 
 ---
 
