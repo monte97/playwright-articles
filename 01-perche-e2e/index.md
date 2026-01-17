@@ -68,7 +68,7 @@ I test E2E presentano sfide specifiche che ne hanno limitato l'adozione.
 └── Manutenzione costante
 ```
 
-Non puoi mockare tutto come nei test unitari. Serve l'intera applicazione funzionante.
+Non è possibile mockare tutto come nei test unitari. Serve l'intera applicazione funzionante.
 
 ### Velocità
 

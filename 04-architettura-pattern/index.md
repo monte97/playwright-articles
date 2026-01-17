@@ -32,7 +32,7 @@ test('login', async ({ page }) => {
 });
 ```
 
-Poi aggiungi altri test che fanno login:
+Quando si aggiungono altri test che fanno login:
 
 ```javascript
 test('view profile', async ({ page }) => {
@@ -49,7 +49,7 @@ test('view profile', async ({ page }) => {
 
 **I problemi:**
 1. Stesso codice in 50 test
-2. Se il form cambia, modifichi 50 file
+2. Se il form cambia, vanno modificati 50 file
 3. Ogni test esegue il login via UI (secondi persi)
 
 ---
@@ -96,7 +96,7 @@ test('login con successo', async ({ page }) => {
 
 **Vantaggi:**
 - La logica è in un posto solo
-- Se il form cambia, modifichi solo `LoginPage.ts`
+- Se il form cambia, si modifica solo `LoginPage.ts`
 - I test esprimono l'intento, non i dettagli
 
 ---

@@ -88,7 +88,7 @@ Scrivere test a mano è lento. **Codegen** registra le tue azioni e genera il co
 npx playwright codegen localhost:3000
 ```
 
-Si apre un browser. Interagisci con l'app. Playwright genera il codice:
+Si apre un browser. Interagendo con l'app, Playwright genera il codice:
 
 ```javascript
 // Generato automaticamente
@@ -174,7 +174,7 @@ npx playwright test --trace on
 npx playwright show-trace trace.zip
 ```
 
-Il trace è un file che puoi aprire nel browser. Vedi esattamente cosa è successo, anche se il test è girato in CI.
+Il trace è un file apribile nel browser. Mostra esattamente cosa è successo, anche se il test è girato in CI.
 
 ---
 
