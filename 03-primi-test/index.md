@@ -263,7 +263,7 @@ export default defineConfig({
 
 ---
 
-## Cosa Ho Imparato
+## Riepilogo
 
 1. **Sintassi semplice**: `test()`, `page`, `await`, `expect()`
 2. **Codegen**: Genera test registrando le azioni

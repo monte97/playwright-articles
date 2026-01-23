@@ -18,11 +18,11 @@ Una serie pratica per padroneggiare il testing End-to-End con **Playwright**, il
 
 Questa serie copre l'intero percorso dal "perché testare" al "come deployare in produzione":
 
-1. **Perché i Test E2E** — La piramide dei test, vantaggi e sfide reali
-2. **Introduzione a Playwright** — I 3 pilastri: affidabilità, velocità, semplicità
-3. **I Tuoi Primi Test** — Hands-on con Codegen, UI Mode e Trace Viewer
-4. **Architettura e Pattern** — Page Object Model, Fixtures, parallelizzazione
-5. **CI/CD e Best Practices** — Integrazione continua e strategie enterprise
+1. **Perché i Test E2E**: La piramide dei test, vantaggi e sfide reali
+2. **Introduzione a Playwright**: I 3 pilastri: affidabilità, velocità, semplicità
+3. **I Tuoi Primi Test**: Hands-on con Codegen, UI Mode e Trace Viewer
+4. **Architettura e Pattern**: Page Object Model, Fixtures, parallelizzazione
+5. **CI/CD e Best Practices**: Integrazione continua e strategie enterprise
 
 ---
 

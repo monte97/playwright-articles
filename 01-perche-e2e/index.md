@@ -23,15 +23,11 @@ In produzione si verificano problemi che i test unitari non rilevano: form che n
 
 ## La Piramide dei Test
 
-```text
-        /\
-       /E2E\        ← Pochi, mirati (10%)
-      /------\
-     /Integration\   ← Moderati (20%)
-    /--------------\
-   /   Unit Tests   \ ← Molti, veloci (70%)
-  /------------------\
-```
+| Livello | Quantità | Caratteristica |
+|---------|----------|----------------|
+| E2E | 10% | Pochi, mirati |
+| Integration | 20% | Moderati |
+| Unit Tests | 70% | Molti, veloci |
 
 Tre livelli, tre scopi diversi:
 
@@ -47,11 +43,11 @@ I test E2E stanno in cima perché coprono flussi completi. Ma devono essere poch
 
 ## Perché i Test E2E Servono
 
-**Confidenza** — I test E2E verificano l'esperienza utente reale, non funzioni isolate. Il test attraversa l'intero flusso applicativo.
+**Confidenza**: I test E2E verificano l'esperienza utente reale, non funzioni isolate. Il test attraversa l'intero flusso applicativo.
 
-**Copertura reale** — Frontend, backend, database e servizi esterni vengono testati insieme. I bug di integrazione emergono solo in questo modo.
+**Copertura reale**: Frontend, backend, database e servizi esterni vengono testati insieme. I bug di integrazione emergono solo in questo modo.
 
-**Protezione dei flussi critici** — Login, checkout, pagamenti sono flussi che impattano direttamente il business. I test E2E verificano che funzionino end-to-end.
+**Protezione dei flussi critici**: Login, checkout, pagamenti sono flussi che impattano direttamente il business. I test E2E verificano che funzionino end-to-end.
 
 ---
 
@@ -61,34 +57,31 @@ I test E2E presentano sfide specifiche che ne hanno limitato l'adozione.
 
 ### Costo
 
-```text
-├── Setup complesso
-├── Ambiente completo (server, database, frontend)
-├── Dati di test da preparare
-└── Manutenzione costante
-```
+**Problemi:**
+- Setup complesso
+- Ambiente completo (server, database, frontend)
+- Dati di test da preparare
+- Manutenzione costante
 
 Non è possibile mockare tutto come nei test unitari. Serve l'intera applicazione funzionante.
 
 ### Velocità
 
-```text
-├── Browser rendering
-├── Network calls reali
-├── Attese UI impredittibili
-└── Esecuzione sequenziale
-```
+**Problemi:**
+- Browser rendering
+- Network calls reali
+- Attese UI impredittibili
+- Esecuzione sequenziale
 
 Un test E2E richiede secondi. Una suite completa richiede ore.
 
 ### Fragilità
 
-```text
-├── UI changes rompono i selettori
-├── Timing issues
-├── Race conditions
-└── Test "flaky" che passano e falliscono a caso
-```
+**Problemi:**
+- UI changes rompono i selettori
+- Timing issues
+- Race conditions
+- Test "flaky" che passano e falliscono a caso
 
 Il problema principale. Test che falliscono senza che il codice sia cambiato riducono l'affidabilità della suite di test.
 

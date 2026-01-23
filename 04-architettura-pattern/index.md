@@ -284,26 +284,26 @@ Il test prosegue solo quando la risposta API è stata ricevuta, garantendo deter
 
 ## Struttura Consigliata
 
-```text
+```
 playwright/
-├── .auth/
-│   └── user.json           # Stato autenticato
-├── fixtures/
-│   ├── auth.ts             # Fixture autenticazione
-│   └── api.ts              # Fixture per setup API
-├── pages/
-│   ├── LoginPage.ts
-│   └── CheckoutPage.ts
-├── tests/
-│   ├── auth.setup.ts       # Setup globale
-│   ├── login.spec.ts
-│   └── checkout.spec.ts
-└── playwright.config.ts
+  .auth/
+    user.json              # Stato autenticato
+  fixtures/
+    auth.ts                # Fixture autenticazione
+    api.ts                 # Fixture per setup API
+  pages/
+    LoginPage.ts
+    CheckoutPage.ts
+  tests/
+    auth.setup.ts          # Setup globale
+    login.spec.ts
+    checkout.spec.ts
+  playwright.config.ts
 ```
 
 ---
 
-## Cosa Ho Imparato
+## Riepilogo
 
 1. **Page Object Model**: Una classe per pagina. Manutenibilità.
 2. **Fixtures**: Setup riutilizzabile. Autenticazione ottimizzata.

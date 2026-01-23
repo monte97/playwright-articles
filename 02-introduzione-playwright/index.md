@@ -201,7 +201,7 @@ Il codice risulta più conciso e non richiede `sleep()` manuali.
 
 ---
 
-## Cosa Ho Imparato
+## Riepilogo
 
 1. **Auto-waiting** elimina i test flaky legati al timing
 2. **Parallelizzazione** riduce i tempi di 4x

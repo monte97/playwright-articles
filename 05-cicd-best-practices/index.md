@@ -61,7 +61,7 @@ jobs:
           retention-days: 30
 ```
 
-> **Nota di ottimizzazione**: Per semplificare ulteriormente la pipeline, è possibile usare l'action ufficiale `uses: microsoft/playwright-github-action@v1`. Questa action gestisce in modo automatico il caching dei browser e l'installazione delle dipendenze, riducendo i tempi di esecuzione e la complessità dello script.
+> ⚠️ **Ottimizzazione**: Per semplificare ulteriormente la pipeline, è possibile usare l'action ufficiale `uses: microsoft/playwright-github-action@v1`. Questa action gestisce in modo automatico il caching dei browser e l'installazione delle dipendenze, riducendo i tempi di esecuzione e la complessità dello script.
 
 **GitLab CI:**
 
