@@ -143,6 +143,8 @@ test('view profile', async ({ authenticatedPage }) => {
 });
 ```
 
+> **Nota di performance**: Questo approccio con una fixture custom è un ottimo modo per astrarre il login, ma ha un limite: esegue il login via UI **per ogni file di test** che la utilizza. È più lento rispetto al riutilizzo di uno stato di autenticazione salvato, come vedremo nel prossimo paragrafo.
+
 ### Setup Globale
 
 Per ottimizzare ancora: esegui il login **una volta** per tutta la suite.
