@@ -82,16 +82,22 @@ Running 3 tests using 3 workers
 
 ## Codegen: Non Scrivere, Registra
 
-Scrivere test a mano è lento. **Codegen** registra le tue azioni e genera il codice.
+Scrivere test a mano può essere lento e ripetitivo. [**Codegen**](https://playwright.dev/docs/codegen) è lo strumento di Playwright che accelera questo processo, registrando le tue interazioni con l'applicazione e generando il codice del test.
 
 ```bash
 npx playwright codegen localhost:3000
 ```
 
-Si apre un browser. Interagendo con l'app, Playwright genera il codice:
+Questa istruzione apre una finestra del browser che punta all'URL specificato e la finestra di Codegen. Ogni azione che compi nel browser (click, input di testo, etc.) viene tradotta in tempo reale in una riga di codice.
+
+![Codegen in azione mentre suggerisce un selettore](https://github.com/monte97/workshop-playwright/blob/main/slides/pages/capitolo-2-playwright/generator-demo-selector.png?raw=true)
+
+La vera forza di Codegen è la sua capacità di **scegliere il selettore migliore possibile**. Dà la priorità a selettori resilienti e centrati sull'utente, come `getByRole`, `getByText`, e `getByLabel`, invece di selettori fragili come XPath o classi CSS.
+
+Il codice generato è un ottimo punto di partenza:
 
 ```javascript
-// Generato automaticamente
+// Codice generato da Codegen
 await page.goto('http://localhost:3000/');
 await page.getByRole('link', { name: 'Products' }).click();
 await page.getByPlaceholder('Search...').fill('laptop');
@@ -99,82 +105,87 @@ await page.getByRole('button', { name: 'Search' }).click();
 await page.getByRole('heading', { name: 'Laptop Pro' }).click();
 ```
 
-Nota: Playwright **sceglie automaticamente i selettori migliori** (`getByRole`, `getByPlaceholder`).
-
 ### Quando Usare Codegen
 
-**Funziona bene per:**
-- Flussi di login/signup lineari
-- Navigazione tra pagine
-- Form semplici
-- Click su bottoni visibili
+Codegen è ideale per "bootstrappare" un nuovo test.
 
-**Poi migliora il codice:**
-- Aggiungi assertion significative
-- Estrai parti ripetute
-- Gestisci casi edge
+**Usalo per:**
+- Tracciare lo scheletro di un flusso utente (login, signup, acquisto).
+- Scoprire rapidamente qual è il selettore giusto per un elemento.
+- Generare il codice per form complesse o navigazioni multi-step.
+
+**Il codice generato va poi rifinito:**
+- Aggiungi assertion (`expect`) per verificare lo stato dell'applicazione.
+- Estrai logica ripetuta in funzioni o Page Object.
+- Gestisci dati di test e casi limite.
+
+![Codegen genera anche le asserzioni](https://github.com/monte97/workshop-playwright/blob/main/slides/pages/capitolo-2-playwright/generator-demo-assertions.png?raw=true)
 
 ---
 
 ## UI Mode
 
+L'[UI Mode](https://playwright.dev/docs/test-ui-mode) è l'ambiente di sviluppo e debugging integrato di Playwright, pensato per la scrittura di test.
+
 ```bash
 npx playwright test --ui
 ```
 
-È un'interfaccia grafica per sviluppare e debuggare test.
+Apre un'interfaccia grafica che rivoluziona il modo in cui si lavora con i test E2E.
 
-**Cosa puoi fare:**
-- Eseguire singoli test con un click
-- Watch mode (riesegue al salvataggio)
-- Vedere screenshot step-by-step
-- Ispezionare il DOM in ogni momento
-- Vedere le chiamate di rete
-- Leggere i log della console
+![L'interfaccia di Playwright UI Mode](https://github.com/monte97/workshop-playwright/blob/main/slides/pages/capitolo-2-playwright/playwright-ui-mode.png?raw=true)
 
-**I pannelli principali:**
+**È lo strumento principale per lo sviluppo locale perché permette di:**
+- **Eseguire test singolarmente** con un clic, isolando il problema.
+- **Usare il "Watch mode"**: il test viene rieseguito automaticamente a ogni salvataggio del file.
+- **Navigare nel tempo (*Time Travel*)**: la timeline del test mostra screenshot per ogni azione. Cliccando su un punto della timeline, puoi vedere lo stato del DOM in quel preciso istante e "tornare indietro" per capire cosa è successo.
+- **Ispezionare i selettori**: usando la funzione "Pick Locator" puoi passare il mouse sull'applicazione e vedere quale selettore usare, con la possibilità di testarlo in tempo reale.
+- **Analizzare le chiamate di rete**, i log della console e vedere il codice sorgente del test, tutto in un unico posto.
 
-- **Timeline**: Cronologia delle azioni. Clicca per vedere lo stato in quel momento.
-- **Azioni**: Lista di click, fill, goto con tempo e locator usato.
-- **Pick Locator**: Passa il mouse sul DOM per vedere il selettore suggerito.
-- **Network**: Tutte le richieste API.
-- **Console**: Log dal browser e dal test.
+L'UI Mode trasforma il debugging da un processo lento e frustrante a un'esperienza interattiva ed efficiente.
 
 ---
 
-## Trace Viewer
+## Trace Viewer: L'analisi post-mortem
 
-Quando un test fallisce in CI, il Trace Viewer permette di analizzare l'esecuzione passo per passo.
+Il [Trace Viewer](https://playwright.dev/docs/trace-viewer) è uno strumento di debugging post-esecuzione. A differenza dell'UI Mode, che è interattivo, il Trace Viewer serve ad analizzare un'esecuzione **già completata**.
 
-**Attivazione:**
+Il suo scopo principale è permettere di diagnosticare fallimenti, specialmente quelli che avvengono in ambienti non interattivi come le pipeline di CI/CD, ma è utilissimo anche in locale.
+
+**Come si attiva:**
+
+La configurazione più comune è registrarlo solo quando un test fallisce e viene ritentato.
 
 ```javascript
 // playwright.config.ts
 export default defineConfig({
   use: {
+    // Registra un trace per ogni test, ma solo al primo tentativo fallito.
     trace: 'on-first-retry',
   },
 });
 ```
 
-**Cosa registra:**
-- Screenshot di ogni azione
-- Stato del DOM
-- Chiamate di rete
-- Log della console
-- Punto esatto dell'errore
+Un file `trace.zip` viene generato per ogni test che corrisponde alla condizione.
 
-**Come usarlo:**
+**Cosa contiene un trace:**
+- Lo **snapshot del DOM** per ogni istante del test (time travel).
+- Gli **screenshot** di ogni azione.
+- Le **chiamate di rete** (API requests/responses).
+- I **log della console**.
+- Il punto esatto del fallimento evidenziato.
+
+**Come si apre un trace:**
 
 ```bash
-# Esegui con trace
-npx playwright test --trace on
+# Esegui i test (se un test fallisce, viene generato il trace)
+npx playwright test
 
-# Apri il trace di un test fallito
-npx playwright show-trace trace.zip
+# Apri il report dell'ultimo test fallito
+npx playwright show-trace
 ```
 
-Il trace è un file apribile nel browser. Mostra esattamente cosa è successo, anche se il test è girato in CI.
+Il trace è un'applicazione web locale, auto-contenuta e portabile. Puoi inviare il file `trace.zip` a un collega per mostrare esattamente cosa è successo, senza bisogno di riprodurre il bug. È la "scatola nera" dei tuoi test E2E.
 
 ---
 
@@ -217,16 +228,24 @@ Il test utilizza selettori semantici e non richiede attese manuali.
 
 ---
 
-## Configurazione Base
+## Configurazione del Progetto (`playwright.config.ts`)
+
+Un progetto Playwright è controllato dal file [`playwright.config.ts`](https://playwright.dev/docs/test-configuration) alla root. Una configurazione ben strutturata è fondamentale per un'esperienza di testing scalabile e manutenibile.
+
+Vediamo una configurazione di base, simile a quella che puoi trovare nel [progetto demo (`demo/playwright.config.ts`)](https://github.com/monte97/workshop-playwright/blob/main/demo/playwright.config.ts).
 
 ```javascript
 // playwright.config.ts
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+  // 1. Dove trovare i file dei test.
   testDir: './tests',
+
+  // 2. Timeout globale per ogni test (in millisecondi).
   timeout: 30 * 1000,
 
+  // 3. Progetti: definisce i browser e i dispositivi da testare.
   projects: [
     {
       name: 'chromium',
@@ -238,28 +257,34 @@ export default defineConfig({
     },
   ],
 
+  // 4. Opzioni globali per l'esecuzione dei test.
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
   },
 
-  workers: process.env.CI ? 1 : 4,
+  // 5. Numero di worker per l'esecuzione parallela.
+  workers: process.env.CI ? 1 : undefined, // In CI usa 1, localmente usa il default (metà delle CPU).
 
+  // 6. Server web: avvia l'applicazione prima di eseguire i test.
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    command: 'npm run start', // Comando per avviare l'app
+    url: 'http://localhost:3000', // URL da attendere prima di iniziare
+    reuseExistingServer: !process.env.CI, // In locale, riusa il server se già attivo.
   },
 });
 ```
 
-**Cosa fa:**
-- `testDir`: Dove sono i test
-- `projects`: Browser da testare
-- `baseURL`: URL base (evita hardcoding)
-- `trace`: Registra trace al primo retry
-- `workers`: Parallelizzazione
-- `webServer`: Avvia l'app prima dei test
+### Analisi della Configurazione
+
+1.  **`testDir`**: Indica a Playwright la cartella che contiene i file dei test (quelli che finiscono in `.spec.ts`).
+2.  **`timeout`**: Imposta un tempo massimo per ogni singolo test. Se un test impiega più di 30 secondi, verrà interrotto. È una salvaguardia contro test bloccati.
+3.  **`projects`**: Questa è una delle feature più potenti. Permette di definire diverse configurazioni di test. Qui definiamo due progetti, uno per `chromium` e uno per `firefox`. Eseguendo `npx playwright test --project=chromium` si userà solo Chrome. Playwright fornisce una lista di `devices` pre-configurati per simulare viewport e user agent di dispositivi comuni.
+4.  **`use`**: Contiene opzioni che vengono applicate a tutti i progetti.
+    *   `baseURL`: Permette di usare URL relativi nei test (es. `page.goto('/login')` invece di `page.goto('http://localhost:3000/login')`). Rende i test più portabili tra diversi ambienti.
+    *   `trace`: Come abbiamo visto, `on-first-retry` è la strategia migliore per bilanciare risorse e capacità di debugging.
+5.  **`workers`**: Controlla la parallelizzazione. Il valore di default è `undefined`, che significa che Playwright userà fino a metà dei core della CPU. In CI è prassi comune limitarlo a 1 o 2 per gestire meglio le risorse.
+6.  **`webServer`**: Una feature comodissima. Playwright avvia automaticamente il server della tua applicazione prima di lanciare i test e lo spegne alla fine. `reuseExistingServer` è utile in locale per non dover riavviare il server a ogni esecuzione.
 
 ---
 
@@ -286,7 +311,7 @@ npx playwright test --ui
 ---
 
 *Serie Playwright Workshop:*
-1. [Il Gap che Nessun Unit Test Può Colmare]({{< relref "/posts/playwright-workshop/01-perche-e2e" >}})
+1. [Perché i Test E2E Sono un Pilastro della Quality Assurance]({{< relref "/posts/playwright-workshop/01-perche-e2e" >}})
 2. [Introduzione a Playwright: I Tre Pilastri]({{< relref "/posts/playwright-workshop/02-introduzione-playwright" >}})
 3. **I Tuoi Primi Test con Playwright** (questo articolo)
 4. [Architettura e Pattern per Test Scalabili]({{< relref "/posts/playwright-workshop/04-architettura-pattern" >}})
