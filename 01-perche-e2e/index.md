@@ -100,7 +100,7 @@ Per aggirare questo problema, in passato era comune inserire pause esplicite (i 
 1.  **Test lenti**: Se la pausa è troppo lunga, il test perde tempo prezioso.
 2.  **Test fragili (*flaky*)**: Se la pausa è troppo breve a causa di un rallentamento della rete o del backend, il test fallisce in modo intermittente, minando la fiducia nella suite di test.
 
-Inoltre, i selettori usati per trovare gli elementi erano spesso legati strettamente alla struttura del DOM (es. `div > div > span`), rendendo i test vulnerabili a ogni piccola modifica del markup e aumentando i costi di manutenzione.
+Inoltre, i selettori usati per trovare gli elementi erano spesso legati strettamente alla struttura del DOM (es. `div > div > span`). Questo rendeva i test vulnerabili a ogni piccola modifica del markup, aumentando i costi di manutenzione.
 
 ---
 

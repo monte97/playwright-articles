@@ -26,7 +26,7 @@ Questa sezione presenta pattern architetturali consolidati per scrivere test Pla
 All'inizio, è naturale scrivere test lineari che replicano le azioni dell'utente:
 
 ```javascript
-test('L_utente può visualizzare il suo profilo', async ({ page }) => {
+test('utente può visualizzare il suo profilo', async ({ page }) => {
   // Setup: login
   await page.goto('/login');
   await page.getByLabel('Email').fill('user@test.com');
@@ -206,7 +206,7 @@ export const test = baseTest.extend<{ authenticatedPage: Page }>({
 import { test } from '../fixtures/user.fixture';
 import { expect } from '@playwright/test';
 
-test('L_utente può visualizzare il suo profilo', async ({ authenticatedPage }) => {
+test('utente può visualizzare il suo profilo', async ({ authenticatedPage }) => {
   // Il test parte già autenticato!
   // La 'page' originale è ancora disponibile, ma usiamo quella autenticata.
   await authenticatedPage.getByRole('link', { name: 'Profile' }).click();
@@ -313,7 +313,7 @@ export default defineConfig({
 ```
 Entrambi i test falliranno, perché il carrello alla fine conterrà due prodotti.
 
-**La soluzione**: ogni test deve operare su un set di dati completamente isolato. La strategia più robusta per ottenere questo è creare i dati necessari al test (es. un nuovo utente) all'inizio del test e distruggerli alla fine, tipicamente tramite chiamate API.
+**La soluzione**: ogni test deve operare su un set di dati completamente isolato. La strategia più robusta consiste nel creare i dati necessari (es. un nuovo utente) all'inizio del test tramite chiamate API e distruggerli alla fine.
 
 Playwright fornisce un oggetto [`request`](https://playwright.dev/docs/api-testing) per effettuare chiamate API direttamente all'interno dei test.
 

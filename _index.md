@@ -10,13 +10,13 @@ tags: ["Playwright", "E2E Testing", "Test Automation", "Workshop"]
 categories: ["Testing", "Workshop"]
 ---
 
-Una serie pratica per padroneggiare il testing End-to-End con **Playwright**, il framework di Microsoft che sta ridefinendo gli standard del settore.
+Serie pratica sul testing End-to-End con **Playwright**, il framework di Microsoft che sta ridefinendo gli standard del settore.
 
 ---
 
-## Cosa Imparerai
+## Contenuti
 
-Questa serie copre l'intero percorso dal "perché testare" al "come deployare in produzione":
+La serie copre l'intero percorso dal "perché testare" al "come deployare in produzione":
 
 1. **Perché i Test E2E**: La piramide dei test, vantaggi e sfide reali
 2. **Introduzione a Playwright**: I 3 pilastri: affidabilità, velocità, semplicità

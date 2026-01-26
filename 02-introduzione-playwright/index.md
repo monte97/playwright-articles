@@ -90,13 +90,13 @@ In pratica:
 
 ```javascript
 // File: test-1.spec.js
-test('L_utente 1 aggiunge un prodotto al carrello', async ({ page }) => {
+test('utente 1 aggiunge un prodotto al carrello', async ({ page }) => {
   // Questo test viene eseguito nel suo Browser Context #1
   // Ha i propri cookie e il proprio stato.
 });
 
 // File: test-2.spec.js
-test('L_utente 2 naviga il suo profilo', async ({ page }) => {
+test('utente 2 naviga il suo profilo', async ({ page }) => {
   // Questo test è completamente isolato nel suo Browser Context #2
   // Non può vedere i dati dell'utente 1.
 });

@@ -90,7 +90,7 @@ npx playwright codegen localhost:3000
 
 Questa istruzione apre una finestra del browser che punta all'URL specificato e la finestra di Codegen. Ogni azione che compi nel browser (click, input di testo, etc.) viene tradotta in tempo reale in una riga di codice.
 
-![Codegen in azione mentre suggerisce un selettore](https://github.com/monte97/workshop-playwright/blob/main/slides/pages/capitolo-2-playwright/generator-demo-selector.png?raw=true)
+![Codegen in azione mentre suggerisce un selettore](/images/playwright-workshop/generator-demo-selector.png)
 
 La vera forza di Codegen è la sua capacità di **scegliere il selettore migliore possibile**. Dà la priorità a selettori resilienti e centrati sull'utente, come `getByRole`, `getByText`, e `getByLabel`, invece di selettori fragili come XPath o classi CSS.
 
@@ -119,7 +119,7 @@ Codegen è ideale per "bootstrappare" un nuovo test.
 - Estrai logica ripetuta in funzioni o Page Object.
 - Gestisci dati di test e casi limite.
 
-![Codegen genera anche le asserzioni](https://github.com/monte97/workshop-playwright/blob/main/slides/pages/capitolo-2-playwright/generator-demo-assertions.png?raw=true)
+![Codegen genera anche le asserzioni](/images/playwright-workshop/generator-demo-assertions.png)
 
 ---
 
@@ -133,7 +133,7 @@ npx playwright test --ui
 
 Apre un'interfaccia grafica che rivoluziona il modo in cui si lavora con i test E2E.
 
-![L'interfaccia di Playwright UI Mode](https://github.com/monte97/workshop-playwright/blob/main/slides/pages/capitolo-2-playwright/playwright-ui-mode.png?raw=true)
+![L'interfaccia di Playwright UI Mode](/images/playwright-workshop/playwright-ui-mode.png)
 
 **È lo strumento principale per lo sviluppo locale perché permette di:**
 - **Eseguire test singolarmente** con un clic, isolando il problema.
